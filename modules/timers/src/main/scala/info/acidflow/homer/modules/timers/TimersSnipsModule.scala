@@ -6,8 +6,8 @@ import java.util.concurrent.{Executors, Future, ScheduledThreadPoolExecutor, Tim
 import com.typesafe.scalalogging.LazyLogging
 import info.acidflow.homer.Constants
 import info.acidflow.homer.model.{NluResult, SlotValueCustom, SlotValueDuration}
-import info.acidflow.homer.modules.SnipsModule
 import info.acidflow.homer.modules.timers.async.{TimerFinishedListener, TimerRunnable}
+import info.acidflow.homer.modules.{SnipsModule, SnipsTTS}
 import info.acidflow.homer.sound.SoundPlayer
 
 import scala.concurrent.ExecutionContext
@@ -21,6 +21,7 @@ class TimersSnipsModule(
   private[this] val executor: ScheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(4),
   private[this] var timerMap: Map[String, Future[_]] = Map[String, Future[_]]())
   extends SnipsModule
+    with SnipsTTS
     with TimerFinishedListener
     with LazyLogging {
 

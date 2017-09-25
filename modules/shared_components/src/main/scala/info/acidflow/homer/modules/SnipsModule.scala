@@ -10,22 +10,25 @@ import info.acidflow.homer.Constants
 import info.acidflow.homer.communication.mqtt.MqttConfigFactory
 import info.acidflow.homer.model.{NluResult, SnipsSayText}
 import org.eclipse.paho.client.mqttv3.MqttClient.generateClientId
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence
 import org.eclipse.paho.client.mqttv3.{IMqttDeliveryToken, MqttCallback, MqttClient, MqttMessage}
 
 
 trait SnipsModule extends MqttCallback with LazyLogging {
 
   private[this] val objectMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
+  private[this] val mqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.properties")
   private[this] val mqttClient = new MqttClient(
-    MqttConfigFactory.fromResource("global/conf/mqtt.local.properties").getUri.toString, generateClientId()
+    mqttConfig.getUri.toString, generateClientId(), new MqttDefaultFilePersistence(mqttConfig.persistenceDir)
   )
 
-  final override def deliveryComplete(token: IMqttDeliveryToken): Unit = {}
+  def getSubscriptions: Seq[String]
 
-  final override def connectionLost(cause: Throwable): Unit = {
-    logger.error("MQTT connection lost", cause)
-    logger.info("Trying to reconnect MQTT client")
-    start()
+  def handleMessage(nluResult: NluResult)
+
+  private def init(): Unit = {
+    mqttClient.setCallback(this)
+    mqttClient.connect()
   }
 
   def start(): Unit = {
@@ -33,9 +36,10 @@ trait SnipsModule extends MqttCallback with LazyLogging {
     mqttClient.subscribe(getSubscriptions.toArray)
   }
 
-  private def init(): Unit = {
-    mqttClient.setCallback(this)
-    mqttClient.connect()
+  final override def connectionLost(cause: Throwable): Unit = {
+    logger.error("MQTT connection lost", cause)
+    logger.info("Trying to reconnect MQTT client")
+    start()
   }
 
   final override def messageArrived(topic: String, message: MqttMessage): Unit = {
@@ -44,13 +48,9 @@ trait SnipsModule extends MqttCallback with LazyLogging {
     handleMessage(result)
   }
 
-  def getSubscriptions: Seq[String]
+  final override def deliveryComplete(token: IMqttDeliveryToken): Unit = {
 
-  def handleMessage(nluResult: NluResult)
-
-  final def say(text: String): Unit = {
-    logger.debug("Sending TTS input : {}", text)
-    mqttClient.publish(Constants.Mqtt.TTS_SAY, new MqttMessage(objectMapper.writeValueAsBytes(SnipsSayText(text))))
   }
+
 
 }
