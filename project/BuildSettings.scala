@@ -7,10 +7,10 @@ object BuildSettings {
 
   // Basic settings for our app
   lazy val basicSettings = Seq(
-    organization          :=  "info.acidflow",
-    scalaVersion          :=  "2.12.3",
-    javacOptions          :=  javaCompilerOptions,
-    resolvers             ++= Dependencies.resolverRepos
+    organization := "info.acidflow",
+    scalaVersion := "2.12.3",
+    javacOptions := javaCompilerOptions,
+    resolvers ++= Dependencies.resolverRepos
   )
 
   lazy val javaCompilerOptions = Seq(

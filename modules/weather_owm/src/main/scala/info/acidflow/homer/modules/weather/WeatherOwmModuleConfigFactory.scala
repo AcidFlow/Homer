@@ -4,9 +4,10 @@ import java.util.Properties
 
 import scala.io.Source
 
+
 object WeatherOwmModuleConfigFactory {
 
-  def fromResource(res : String = "modules/conf/weather_owm.properties") : WeatherOwmModuleConfig = {
+  def fromResource(res: String = "modules/conf/weather_owm.properties"): WeatherOwmModuleConfig = {
     val props = new Properties()
     props.load(Source.fromResource(res).reader)
 

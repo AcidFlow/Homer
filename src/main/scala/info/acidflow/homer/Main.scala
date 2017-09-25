@@ -3,6 +3,7 @@ package info.acidflow.homer
 import info.acidflow.homer.modules.timers.{TimerModuleConfigFactory, TimersSnipsModule}
 import info.acidflow.homer.modules.weather.{WeatherOwmModuleConfigFactory, WeatherOwmSnipsModule}
 
+
 object Main {
 
   def main(args: Array[String]): Unit = {
@@ -17,5 +18,6 @@ object Main {
 
     val modules = List(timerModule, weatherModule)
     modules.foreach(m => m.start())
+    
   }
 }
