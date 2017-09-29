@@ -22,6 +22,8 @@ object DeezerPlayerNative {
 
   @native def previous() : Unit
 
+  @native def changeVolume(percent : Int) : Int
+
   @native def release() : Unit
 
 }

@@ -57,7 +57,7 @@ int DeezerPlayer::initialize(const char* access_token) {
        return -1;
     }
 
-    dzerr = dz_player_set_output_volume(_app_ctxt.dzplayer, NULL, NULL, 20);
+    dzerr = dz_player_set_output_volume(_app_ctxt.dzplayer, NULL, NULL, 80);
     if (dzerr != DZ_ERROR_NO_ERROR) {
        log("dz_player_set_output_volume error\n");
        return -1;
@@ -126,6 +126,15 @@ void DeezerPlayer::pause() {
 void DeezerPlayer::resume() {
     log("RESUME track n° %d of => %s\n", _app_ctxt.nb_track_played, _app_ctxt.sz_content_url);
     dz_player_resume(_app_ctxt.dzplayer, NULL, NULL);
+}
+
+int DeezerPlayer::change_volume(int percent) {
+    dz_error_t dzerr = dz_player_set_output_volume(_app_ctxt.dzplayer, NULL, NULL, percent);
+    if (dzerr != DZ_ERROR_NO_ERROR) {
+        log("dz_player_set_output_volume error\n");
+        return -1;
+    }
+    return 0;
 }
 
 void DeezerPlayer::release() {

@@ -13,16 +13,16 @@ import org.eclipse.paho.client.mqttv3.{MqttClient, MqttMessage}
 
 trait SnipsTTS extends LazyLogging {
 
-  private[this] val objectMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
-  private[this] val mqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.properties")
-  private[this] val mqttClient = new MqttClient(
-    mqttConfig.getUri.toString, generateClientId(), new MqttDefaultFilePersistence(mqttConfig.persistenceDir)
+  private[this] val ttsObjectMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
+  private[this] val ttsMqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.properties")
+  private[this] val ttsMqttClient = new MqttClient(
+    ttsMqttConfig.getUri.toString, generateClientId(), new MqttDefaultFilePersistence(ttsMqttConfig.persistenceDir)
   )
-  mqttClient.connect()
+  ttsMqttClient.connect()
 
   final def say(text: String): Unit = {
     logger.debug("Sending TTS input : {}", text)
-    mqttClient.publish(Constants.Mqtt.TTS_SAY, new MqttMessage(objectMapper.writeValueAsBytes(SnipsSayText(text))))
+    ttsMqttClient.publish(Constants.Mqtt.TTS_SAY, new MqttMessage(ttsObjectMapper.writeValueAsBytes(SnipsSayText(text))))
   }
 
 }

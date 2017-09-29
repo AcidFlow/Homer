@@ -5,25 +5,26 @@ import info.acidflow.homer.model.NluResult
 import info.acidflow.homer.modules.music.deezer.api.DeezerApi
 import info.acidflow.homer.modules.music.deezer.jni.DeezerPlayerNative
 import info.acidflow.homer.modules.music.deezer.jni.callback.DeezerConnectCallback
-import info.acidflow.homer.modules.{SnipsModule, SnipsTTS}
+import info.acidflow.homer.modules.{SnipsModule, SnipsTTS, TTSAware}
 
 
 class DeezerSnipsModule(
-  val moduleConf: DeezerSnipsModuleConfig = DeezerSnipsModuleConfigFactory.fromResource()) extends SnipsModule
-  with SnipsTTS {
+  val moduleConf: DeezerSnipsModuleConfig = DeezerSnipsModuleConfigFactory.fromResource())
+  extends SnipsModule
+    with SnipsTTS
+    with TTSAware {
 
   private var isPlayerReady = false
   private val deezerIntentHandler = new DeezerIntentHandler(new DeezerApi(moduleConf.apiBaseUrl, moduleConf.userToken))
   DeezerConnectCallback.deezerSnipsModule = this
 
-  override def getSubscriptions: Seq[String] = {
+  override def getIntentSubscriptions: Seq[String] = {
     Seq(
       "PlayMusicCreativeWork", "StopMusicCreativeWork", "Pause", "ResumeMusicCreativeWork", "PreviousTrack", "NextTrack"
-    )
-      .map(n => Constants.Mqtt.INTENT_REGISTER_PREFIX + n)
+    ).map(n => Constants.Mqtt.INTENT_REGISTER_PREFIX + n)
   }
 
-  override def handleMessage(nluResult: NluResult): Unit = {
+  override def handleIntent(nluResult: NluResult): Unit = {
     if (!isPlayerReady) {
       say("Deezer player is not yet ready. Please try again in few seconds.")
     }
@@ -41,11 +42,22 @@ class DeezerSnipsModule(
     }
   }
 
+  override def handleSayFinished(): Unit = {
+    if (isPlayerReady) {
+      DeezerPlayerNative.resume()
+    }
+  }
 
-  override def start(): Unit = {
+  override def handleSayStart(): Unit = {
+    if (isPlayerReady) {
+      DeezerPlayerNative.pause()
+    }
+  }
+
+  override def startTTSAwareness(): Unit = {
     DeezerPlayerNative
       .init(moduleConf.appId, moduleConf.appName, moduleConf.appVersion, moduleConf.userCachePath, moduleConf.userToken)
-    super.start()
+    super.startTTSAwareness()
   }
 
   def playerReady(): Unit = {

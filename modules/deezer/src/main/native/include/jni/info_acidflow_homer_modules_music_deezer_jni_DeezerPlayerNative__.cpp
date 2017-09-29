@@ -69,6 +69,11 @@ JNIEXPORT void JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerP
     sPlayer->previous();
 }
 
+JNIEXPORT int JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerPlayerNative_00024_changeVolume
+  (JNIEnv * env, jobject jobj, jint volpercent) {
+     return sPlayer->change_volume(volpercent);
+}
+
 
 JNIEXPORT void JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerPlayerNative_00024_release
   (JNIEnv * env, jobject jobj){

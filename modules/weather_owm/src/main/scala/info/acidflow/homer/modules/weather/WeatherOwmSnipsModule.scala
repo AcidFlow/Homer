@@ -16,12 +16,12 @@ class WeatherOwmSnipsModule(
 
   private lazy val api = new OwmApi(config.owmBaseUrl, config.owmApiKey, config.owmUnits)
 
-  override def getSubscriptions: Seq[String] = {
+  override def getIntentSubscriptions: Seq[String] = {
     Seq(config.intentSearchWeatherForecast)
       .map(n => Constants.Mqtt.INTENT_REGISTER_PREFIX + n)
   }
 
-  override def handleMessage(nluResult: NluResult): Unit = {
+  override def handleIntent(nluResult: NluResult): Unit = {
     if (config.intentSearchWeatherForecast.equals(nluResult.intent.intentName)) {
       searchForecast(nluResult)
     } else {

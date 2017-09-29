@@ -8,7 +8,6 @@ lazy val homer = project.in(file("."))
     version := "0.1",
     description := "Homer modules for snips NLU"
   ).settings(mainClass in assembly := Some("info.acidflow.homer.Main"))
-  .aggregate(shared_components, weather_owm, timers, deezer)
   .dependsOn(shared_components, weather_owm, timers, deezer)
 
 lazy val shared_components = (project in file("modules/shared_components"))
@@ -39,7 +38,6 @@ lazy val weather_owm = (project in file("modules/weather_owm"))
     )
   )
   .settings(assemblyJarName in assembly := "weather_owm.jar")
-  .aggregate(shared_components)
   .dependsOn(shared_components)
 
 lazy val timers = (project in file("modules/timers"))
@@ -49,7 +47,6 @@ lazy val timers = (project in file("modules/timers"))
     description := "Timers module."
   )
   .settings(assemblyJarName in assembly := "timers.jar")
-  .aggregate(shared_components)
   .dependsOn(shared_components)
 
 
@@ -66,5 +63,4 @@ lazy val deezer = (project in file("modules/deezer"))
   )
   .settings(target in javah := sourceDirectory.value / "main" /"native" / "include" / "jni")
   .settings(assemblyJarName in assembly := "deezer.jar")
-  .aggregate(shared_components)
   .dependsOn(shared_components)

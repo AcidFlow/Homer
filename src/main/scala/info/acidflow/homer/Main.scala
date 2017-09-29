@@ -24,7 +24,7 @@ object Main {
     )
 
     val modules = List(deezerModule, weatherModule, timerModule)
-    modules.foreach(m => m.start())
+    modules.foreach(m => m.startModule())
 
     StdIn.readLine()
     

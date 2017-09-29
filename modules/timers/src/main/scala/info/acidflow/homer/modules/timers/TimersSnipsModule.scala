@@ -25,12 +25,12 @@ class TimersSnipsModule(
     with TimerFinishedListener
     with LazyLogging {
 
-  override def getSubscriptions: Seq[String] = {
+  override def getIntentSubscriptions: Seq[String] = {
     Seq(conf.intentStartTimer, conf.intentStopTimer)
       .map(s => Constants.Mqtt.INTENT_REGISTER_PREFIX + s)
   }
 
-  override def handleMessage(nluResult: NluResult): Unit = {
+  override def handleIntent(nluResult: NluResult): Unit = {
     logger.debug("Received message : {}", nluResult)
 
     if (conf.intentStartTimer.equals(nluResult.intent.intentName)) {

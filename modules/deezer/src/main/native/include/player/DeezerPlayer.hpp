@@ -31,6 +31,7 @@ class DeezerPlayer {
         void resume();
         void next();
         void previous();
+        int change_volume(int percent);
         void release();
 };
 

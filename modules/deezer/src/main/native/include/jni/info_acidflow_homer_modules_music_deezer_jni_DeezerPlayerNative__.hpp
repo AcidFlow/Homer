@@ -79,6 +79,14 @@ JNIEXPORT void JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerP
 JNIEXPORT void JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerPlayerNative_00024_release
   (JNIEnv *, jobject);
 
+/*
+ * Class:     info_acidflow_homer_modules_music_deezer_jni_DeezerPlayerNative__
+ * Method:    release
+ * Signature: (I)V
+ */
+JNIEXPORT int JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerPlayerNative_00024_changeVolume
+  (JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif
