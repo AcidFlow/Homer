@@ -1,8 +1,8 @@
-#include <jni.h>
-#include <string>
-
 #ifndef _JNIUtils_
 #define _JNIUtils_
+
+#include <jni.h>
+#include <string>
 
 class JNIUtils {
 

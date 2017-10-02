@@ -1,8 +1,8 @@
-#include <deezer-connect.h>
-#include <deezer-player.h>
-
 #ifndef DEEZERPLAYER_HPP
 #define DEEZERPLAYER_HPP
+
+#include <deezer-connect.h>
+#include <deezer-player.h>
 
 typedef struct {
     int                   nb_track_played;
@@ -25,13 +25,13 @@ class DeezerPlayer {
         DeezerPlayer(dz_connect_configuration conf);
         int initialize(const char* access_token);
         void load(const char * media_uri);
-        void play();
-        void stop();
-        void pause();
-        void resume();
-        void next();
-        void previous();
-        int change_volume(int percent);
+        void play() const;
+        void stop() const;
+        void pause() const;
+        void resume() const;
+        void next() const;
+        void previous() const;
+        int change_volume(int percent) const;
         void release();
 };
 

@@ -98,37 +98,37 @@ void DeezerPlayer::load(const char * media_uri) {
     dz_player_load(_app_ctxt.dzplayer, NULL, NULL, _app_ctxt.sz_content_url);
 }
 
-void DeezerPlayer::play() {
+void DeezerPlayer::play() const {
     log("PLAY track n° %d of => %s\n", _app_ctxt.nb_track_played, _app_ctxt.sz_content_url);
     dz_player_play(_app_ctxt.dzplayer, NULL, NULL, DZ_PLAYER_PLAY_CMD_START_TRACKLIST, DZ_INDEX_IN_QUEUELIST_CURRENT);
 }
 
-void DeezerPlayer::stop() {
+void DeezerPlayer::stop() const {
     log("STOP => %s\n", _app_ctxt.sz_content_url);
     dz_player_stop(_app_ctxt.dzplayer, NULL, NULL);
 }
 
-void DeezerPlayer::next() {
+void DeezerPlayer::next() const {
     log("NEXT => %s\n", _app_ctxt.sz_content_url);
     dz_player_play(_app_ctxt.dzplayer, NULL, NULL, DZ_PLAYER_PLAY_CMD_START_TRACKLIST, DZ_INDEX_IN_QUEUELIST_NEXT);
 }
 
-void DeezerPlayer::previous() {
+void DeezerPlayer::previous() const {
     log("PREVIOUS => %s\n", _app_ctxt.sz_content_url);
     dz_player_play(_app_ctxt.dzplayer, NULL, NULL, DZ_PLAYER_PLAY_CMD_START_TRACKLIST, DZ_INDEX_IN_QUEUELIST_PREVIOUS);
 }
 
-void DeezerPlayer::pause() {
+void DeezerPlayer::pause() const {
     log("PAUSE track n° %d of => %s\n", _app_ctxt.nb_track_played, _app_ctxt.sz_content_url);
     dz_player_pause(_app_ctxt.dzplayer, NULL, NULL);
 }
 
-void DeezerPlayer::resume() {
+void DeezerPlayer::resume() const {
     log("RESUME track n° %d of => %s\n", _app_ctxt.nb_track_played, _app_ctxt.sz_content_url);
     dz_player_resume(_app_ctxt.dzplayer, NULL, NULL);
 }
 
-int DeezerPlayer::change_volume(int percent) {
+int DeezerPlayer::change_volume(int percent) const {
     dz_error_t dzerr = dz_player_set_output_volume(_app_ctxt.dzplayer, NULL, NULL, percent);
     if (dzerr != DZ_ERROR_NO_ERROR) {
         log("dz_player_set_output_volume error\n");
@@ -160,5 +160,8 @@ void DeezerPlayer::release() {
         _app_ctxt.dzconnect = NULL;
     }
 
+    //XXX Should we free the configuration?
+
     log("-- shutdowned --\n");
+
 }

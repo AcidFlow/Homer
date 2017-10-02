@@ -54,10 +54,9 @@ class DeezerSnipsModule(
     }
   }
 
-  override def startTTSAwareness(): Unit = {
-    DeezerPlayerNative
-      .init(moduleConf.appId, moduleConf.appName, moduleConf.appVersion, moduleConf.userCachePath, moduleConf.userToken)
-    super.startTTSAwareness()
+  override def startModule(): Unit = {
+    DeezerPlayerNative.init(moduleConf.appId, moduleConf.appName, moduleConf.appVersion, moduleConf.userCachePath, moduleConf.userToken)
+    super.startModule()
   }
 
   def playerReady(): Unit = {

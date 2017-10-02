@@ -1,7 +1,7 @@
 #include "JNIUtils.hpp"
 
 // Static initialization
-JavaVM* JNIUtils::g_vm = NULL;
+JavaVM* JNIUtils::g_vm = nullptr;
 
 jint JNI_OnLoad(JavaVM* vm, void *reserved){
     jint result = -1;
@@ -18,7 +18,7 @@ jint JNI_OnLoad(JavaVM* vm, void *reserved){
 
 JNIEnv* JNIUtils::getJNIEnv() {
     JNIEnv* env;
-    JNIUtils::g_vm->AttachCurrentThread((void **)&env, NULL);
+    JNIUtils::g_vm->AttachCurrentThread((void **)&env, nullptr);
     return env;
 }
 

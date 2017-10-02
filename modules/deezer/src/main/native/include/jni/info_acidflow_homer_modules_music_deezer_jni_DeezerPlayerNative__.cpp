@@ -4,13 +4,18 @@
 #include "JNIUtils.hpp"
 #include "../player/DeezerPlayer.hpp"
 
-// TODO Refactoring of the app context to an object?!
-static DeezerPlayer* sPlayer = NULL;
+
+static DeezerPlayer* sPlayer = nullptr;
 
 
 JNIEXPORT void JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerPlayerNative_00024_init
   (JNIEnv * env, jobject jobj, jstring japp_id, jstring jproduct_id, jstring jproduct_build, jstring jcache_path,
     jstring jaccess_token) {
+
+    if (sPlayer) {
+        Java_info_acidflow_homer_modules_music_deezer_jni_DeezerPlayerNative_00024_stop(env, jobj);
+        Java_info_acidflow_homer_modules_music_deezer_jni_DeezerPlayerNative_00024_release(env, jobj);
+    }
 
     struct dz_connect_configuration config;
     memset(&config, 0, sizeof(struct dz_connect_configuration));
@@ -19,7 +24,7 @@ JNIEXPORT void JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerP
     config.product_id        = strdup(JNIUtils::extractJniString(env, jproduct_id).c_str());    // SET YOUR APPLICATION NAME
     config.product_build_id  = strdup(JNIUtils::extractJniString(env, jproduct_build).c_str()); // SET YOUR APPLICATION VERSION
     config.user_profile_path = strdup(JNIUtils::extractJniString(env, jcache_path).c_str());          // SET THE USER CACHE PATH
-    config.connect_event_cb  = NULL;
+    config.connect_event_cb  = nullptr;
 
     std::string access_token = JNIUtils::extractJniString(env, jaccess_token);
     sPlayer = new DeezerPlayer(config);
@@ -80,5 +85,5 @@ JNIEXPORT void JNICALL Java_info_acidflow_homer_modules_music_deezer_jni_DeezerP
     sPlayer->release();
 
     delete sPlayer;
-    sPlayer = NULL;
+    sPlayer = nullptr;
 }

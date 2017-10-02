@@ -23,7 +23,7 @@ trait TTSAware extends LazyLogging {
 
   def handleSayStart()
 
-  def startTTSAwareness(): Unit = {
+  final def startTTSAwareness(): Unit = {
     ttsAwareMqttClient.setCallback(ttsAwareMqttCallback)
     ttsAwareMqttClient.connect()
     ttsAwareMqttClient.subscribe(ttsAwareSubscriptions.toArray)

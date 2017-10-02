@@ -16,6 +16,8 @@ set(PROJECT_VERSION_MINOR 0)
 set(PROJECT_VERSION_PATCH 0)
 
 
+# Required dependencies
+
 find_package(JNI)
 if (JNI_FOUND)
     message (STATUS "JNI_INCLUDE_DIRS=${JNI_INCLUDE_DIRS}")
@@ -39,6 +41,8 @@ else()
     message (FATAL_ERROR "Deezer library not found!")
 endif()
 
+set (CMAKE_CXX_STANDARD 11)
+
 # Include directories
 include_directories(.)
 include_directories(${JNI_INCLUDE_DIRS})
@@ -54,7 +58,7 @@ file(GLOB LIB_SRC
   "*.cpp"
 )
 
-set(HELLO_SRC
+set(DEEZERPLAYER_SRC
     include/jni/JNIUtils.cpp
     include/jni/callback/ScalaConnectCallback.cpp
     include/jni/callback/ScalaPlayerCallback.cpp
@@ -68,7 +72,7 @@ set(HELLO_SRC
 # (required by sbt-jni) major version should always be appended to library name
 #
 set (LIB_NAME ${PROJECT_NAME}${PROJECT_VERSION_MAJOR})
-add_library(${LIB_NAME} SHARED ${HELLO_SRC})
+add_library(${LIB_NAME} SHARED ${DEEZERPLAYER_SRC})
 target_link_libraries(${LIB_NAME} ${DEEZER_LIB})
 
 install(TARGETS ${LIB_NAME} LIBRARY DESTINATION .)

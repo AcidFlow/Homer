@@ -1,7 +1,8 @@
-#include <deezer-player.h>
-
 #ifndef DEEZERPLAYERCALLBACK_HPP
 #define DEEZERPLAYERCALLBACK_HPP
+
+#include <deezer-player.h>
+
 
 class DeezerPlayerCallback {
 
