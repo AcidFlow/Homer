@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-case class User(id: String) {
+case class Artist(id: String, name: String, trackList: String) {
 
 }

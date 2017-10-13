@@ -4,8 +4,6 @@ import info.acidflow.homer.modules.music.deezer.{DeezerSnipsModule, DeezerSnipsM
 import info.acidflow.homer.modules.timers.{TimerModuleConfigFactory, TimersSnipsModule}
 import info.acidflow.homer.modules.weather.{WeatherOwmModuleConfigFactory, WeatherOwmSnipsModule}
 
-import scala.io.StdIn
-
 
 object Main {
 
@@ -23,10 +21,8 @@ object Main {
       DeezerSnipsModuleConfigFactory.fromResource("modules/conf/music_deezer.local.properties")
     )
 
-    val modules = List(deezerModule, weatherModule, timerModule)
-    modules.foreach(m => m.startModule())
+    val modules = List(weatherModule, timerModule, deezerModule)
 
-    StdIn.readLine()
-    
+    modules.foreach(m => m.startModule())
   }
 }

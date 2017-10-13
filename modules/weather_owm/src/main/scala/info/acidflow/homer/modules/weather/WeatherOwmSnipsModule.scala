@@ -3,8 +3,8 @@ package info.acidflow.homer.modules.weather
 import com.typesafe.scalalogging.LazyLogging
 import info.acidflow.homer.Constants
 import info.acidflow.homer.model.{NluResult, SlotValueCustom}
-import info.acidflow.homer.modules.{SnipsModule, SnipsTTS}
 import info.acidflow.homer.modules.weather.network.OwmApi
+import info.acidflow.homer.modules.{SnipsModule, SnipsTTS}
 
 import scala.util.{Failure, Success}
 
@@ -50,7 +50,6 @@ class WeatherOwmSnipsModule(
       }
     )
   }
-
 
 
 }

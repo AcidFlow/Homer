@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-case class User(id: String) {
+case class Track(id: String, title: String) {
 
+  def deezerUri: String = {
+    s"dzmedia:///track/$id"
+  }
 }

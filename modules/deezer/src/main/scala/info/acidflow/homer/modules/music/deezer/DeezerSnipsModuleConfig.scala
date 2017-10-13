@@ -7,4 +7,4 @@ case class DeezerSnipsModuleConfig(
   appVersion: String,
   userCachePath: String,
   userToken: String,
-  apiBaseUrl : String)
+  apiBaseUrl: String)

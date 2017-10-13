@@ -1,12 +1,20 @@
 package info.acidflow.homer.modules.music.deezer.jni.callback
 
 import com.typesafe.scalalogging.LazyLogging
-import info.acidflow.homer.modules.music.deezer.DeezerSnipsModule
+import info.acidflow.homer.modules.music.deezer.DeezerPlayer
 
 
 object DeezerConnectCallback extends LazyLogging {
 
-  var deezerSnipsModule : DeezerSnipsModule = _
+  def onConnectEvent(event: Int): Unit = {
+    logger.info("Scala connect callback called with event : {}", ConnectEvent.values.toArray.apply(event))
+    val eventScala = ConnectEvent.values.toArray.apply(event)
+    eventScala match {
+      case ConnectEvent.DZ_CONNECT_EVENT_USER_LOGIN_OK => DeezerPlayer.ready()
+      case _ =>
+    }
+  }
+
 
   object ConnectEvent extends Enumeration {
 
@@ -58,12 +66,4 @@ object DeezerConnectCallback extends LazyLogging {
   }
 
 
-  def onConnectEvent(event: Int): Unit = {
-    logger.info("Scala connect callback called with event : {}", ConnectEvent.values.toArray.apply(event))
-    val eventScala = ConnectEvent.values.toArray.apply(event)
-    eventScala match {
-      case ConnectEvent.DZ_CONNECT_EVENT_USER_LOGIN_OK =>
-        deezerSnipsModule.playerReady()
-    }
-  }
 }

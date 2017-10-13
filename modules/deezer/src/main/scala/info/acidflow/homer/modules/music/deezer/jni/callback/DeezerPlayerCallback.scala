@@ -1,10 +1,22 @@
 package info.acidflow.homer.modules.music.deezer.jni.callback
 
 import com.typesafe.scalalogging.LazyLogging
-import info.acidflow.homer.modules.music.deezer.jni.DeezerPlayerNative
+import info.acidflow.homer.modules.music.deezer.DeezerPlayer
 
 
 object DeezerPlayerCallback extends LazyLogging {
+
+
+  def onPlayerEvent(event: Int): Unit = {
+    val eventScala = PlayerEvent.values.toArray.apply(event)
+    logger.info("Scala player callback called with event : {}", eventScala)
+    eventScala match {
+      case PlayerEvent.DZ_PLAYER_EVENT_QUEUELIST_LOADED => DeezerPlayer.play()
+      case PlayerEvent.DZ_PLAYER_EVENT_QUEUELIST_NEED_NATURAL_NEXT => DeezerPlayer.playNaturalNext()
+      case _ =>
+    }
+
+  }
 
 
   object PlayerEvent extends Enumeration {
@@ -82,12 +94,4 @@ object DeezerPlayerCallback extends LazyLogging {
   }
 
 
-  def onPlayerEvent(event: Int): Unit = {
-    val eventScala = PlayerEvent.values.toArray.apply(event)
-    logger.info("Scala player callback called with event : {}", eventScala)
-    eventScala match {
-      case PlayerEvent.DZ_PLAYER_EVENT_QUEUELIST_LOADED => DeezerPlayerNative.play()
-    }
-
-  }
 }

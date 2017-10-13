@@ -31,14 +31,14 @@ trait SnipsModule extends LazyLogging {
 
   def handleSayStart(): Unit = {}
 
-  private def initIntentClient(): Unit = {
-    intentMqttClient.setCallback(intentMqttCallback)
-    intentMqttClient.connect()
-  }
-
   def startModule(): Unit = {
     initIntentClient()
     intentMqttClient.subscribe(getIntentSubscriptions.toArray)
+  }
+
+  private def initIntentClient(): Unit = {
+    intentMqttClient.setCallback(intentMqttCallback)
+    intentMqttClient.connect()
   }
 
 
@@ -47,7 +47,6 @@ trait SnipsModule extends LazyLogging {
     final override def connectionLost(cause: Throwable): Unit = {
       logger.error("MQTT connection lost", cause)
       logger.info("Trying to reconnect MQTT client")
-      startModule()
     }
 
     final override def messageArrived(topic: String, message: MqttMessage): Unit = {

@@ -4,9 +4,10 @@ import java.util.Properties
 
 import scala.io.Source
 
+
 object DeezerSnipsModuleConfigFactory {
 
-  def fromResource(res : String = "modules/conf/music_deezer.properties") : DeezerSnipsModuleConfig = {
+  def fromResource(res: String = "modules/conf/music_deezer.properties"): DeezerSnipsModuleConfig = {
     val props = new Properties()
     props.load(Source.fromResource(res).reader)
 

@@ -22,7 +22,8 @@ trait SnipsTTS extends LazyLogging {
 
   final def say(text: String): Unit = {
     logger.debug("Sending TTS input : {}", text)
-    ttsMqttClient.publish(Constants.Mqtt.TTS_SAY, new MqttMessage(ttsObjectMapper.writeValueAsBytes(SnipsSayText(text))))
+    ttsMqttClient
+      .publish(Constants.Mqtt.TTS_SAY, new MqttMessage(ttsObjectMapper.writeValueAsBytes(SnipsSayText(text))))
   }
 
 }

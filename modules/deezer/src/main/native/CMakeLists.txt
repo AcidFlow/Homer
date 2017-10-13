@@ -57,8 +57,9 @@ file(GLOB LIB_SRC
   "*.cc"
   "*.cpp"
 )
-
+set(CMAKE_BUILD_TYPE Debug)
 set(DEEZERPLAYER_SRC
+    include/logger.hpp
     include/jni/JNIUtils.cpp
     include/jni/callback/ScalaConnectCallback.cpp
     include/jni/callback/ScalaPlayerCallback.cpp

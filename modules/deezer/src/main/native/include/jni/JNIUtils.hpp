@@ -10,7 +10,9 @@ class JNIUtils {
         static JavaVM* g_vm;
 
     public:
-        static JNIEnv* getJNIEnv();
+        static JNIEnv* attachThread();
+        static void detachThread();
+        static void checkAndClearException(JNIEnv * env);
         static std::string extractJniString(JNIEnv * env, jstring jstr);
 
 };

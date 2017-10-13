@@ -1,7 +1,11 @@
 #include "JNIUtils.hpp"
+#include "callback/ScalaConnectCallback.hpp"
+#include "callback/ScalaPlayerCallback.hpp"
+#include <cstdio>
 
 // Static initialization
 JavaVM* JNIUtils::g_vm = nullptr;
+
 
 jint JNI_OnLoad(JavaVM* vm, void *reserved){
     jint result = -1;
@@ -16,11 +20,24 @@ jint JNI_OnLoad(JavaVM* vm, void *reserved){
     return JNI_VERSION_1_8;
 }
 
-JNIEnv* JNIUtils::getJNIEnv() {
-    JNIEnv* env;
-    JNIUtils::g_vm->AttachCurrentThread((void **)&env, nullptr);
+JNIEnv* JNIUtils::attachThread() {
+    JNIEnv* env = NULL;
+    jint result = g_vm->GetEnv((void **) &env, JNI_VERSION_1_8);
+    if (result != JNI_OK) {
+        g_vm->AttachCurrentThread((void **)&env, nullptr);
+    }
     return env;
 }
+
+void JNIUtils::detachThread() {
+    g_vm->DetachCurrentThread();
+}
+
+void JNIUtils::checkAndClearException(JNIEnv * env) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+}
+
 
 
 std::string JNIUtils::extractJniString(JNIEnv* env, jstring jstr) {
