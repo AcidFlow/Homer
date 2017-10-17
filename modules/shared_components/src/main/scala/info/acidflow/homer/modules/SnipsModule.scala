@@ -6,51 +6,59 @@ import java.nio.charset.StandardCharsets
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.typesafe.scalalogging.LazyLogging
-import info.acidflow.homer.Constants
 import info.acidflow.homer.communication.mqtt.MqttConfigFactory
-import info.acidflow.homer.model.{NluResult, SnipsSayText}
+import info.acidflow.homer.model.NluResult
 import org.eclipse.paho.client.mqttv3.MqttClient.generateClientId
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence
 import org.eclipse.paho.client.mqttv3.{IMqttDeliveryToken, MqttCallback, MqttClient, MqttMessage}
 
 
-trait SnipsModule extends MqttCallback with LazyLogging {
+trait SnipsModule extends LazyLogging {
 
-  private[this] val objectMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
-  private[this] val mqttClient = new MqttClient(
-    MqttConfigFactory.fromResource("global/conf/mqtt.local.properties").getUri.toString, generateClientId()
+  private[this] val intentObjectMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
+  private[this] val intentMqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.properties")
+  private[this] val intentMqttClient = new MqttClient(
+    intentMqttConfig.getUri.toString, generateClientId(),
+    new MqttDefaultFilePersistence(intentMqttConfig.persistenceDir)
   )
+  private[this] val intentMqttCallback = new IntentMqttCallback()
 
-  final override def deliveryComplete(token: IMqttDeliveryToken): Unit = {}
+  def getIntentSubscriptions: Seq[String]
 
-  final override def connectionLost(cause: Throwable): Unit = {
-    logger.error("MQTT connection lost", cause)
-    logger.info("Trying to reconnect MQTT client")
-    start()
+  def handleIntent(nluResult: NluResult)
+
+  def handleSayFinished(): Unit = {}
+
+  def handleSayStart(): Unit = {}
+
+  def startModule(): Unit = {
+    initIntentClient()
+    intentMqttClient.subscribe(getIntentSubscriptions.toArray)
   }
 
-  def start(): Unit = {
-    init()
-    mqttClient.subscribe(getSubscriptions.toArray)
+  private def initIntentClient(): Unit = {
+    intentMqttClient.setCallback(intentMqttCallback)
+    intentMqttClient.connect()
   }
 
-  private def init(): Unit = {
-    mqttClient.setCallback(this)
-    mqttClient.connect()
+
+  class IntentMqttCallback extends MqttCallback {
+
+    final override def connectionLost(cause: Throwable): Unit = {
+      logger.error("MQTT connection lost", cause)
+      logger.info("Trying to reconnect MQTT client")
+    }
+
+    final override def messageArrived(topic: String, message: MqttMessage): Unit = {
+      logger.debug("Message arrived : {}", StandardCharsets.UTF_8.decode(ByteBuffer.wrap(message.getPayload)))
+      val result = intentObjectMapper.readValue(message.getPayload, classOf[NluResult])
+      handleIntent(result)
+    }
+
+    final override def deliveryComplete(token: IMqttDeliveryToken): Unit = {
+    }
+
   }
 
-  final override def messageArrived(topic: String, message: MqttMessage): Unit = {
-    logger.debug("Message arrived : {}", StandardCharsets.UTF_8.decode(ByteBuffer.wrap(message.getPayload)))
-    val result = objectMapper.readValue(message.getPayload, classOf[NluResult])
-    handleMessage(result)
-  }
-
-  def getSubscriptions: Seq[String]
-
-  def handleMessage(nluResult: NluResult)
-
-  final def say(text: String): Unit = {
-    logger.debug("Sending TTS input : {}", text)
-    mqttClient.publish(Constants.Mqtt.TTS_SAY, new MqttMessage(objectMapper.writeValueAsBytes(SnipsSayText(text))))
-  }
 
 }

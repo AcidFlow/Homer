@@ -1,5 +1,6 @@
 package info.acidflow.homer
 
+import info.acidflow.homer.modules.music.deezer.{DeezerSnipsModule, DeezerSnipsModuleConfigFactory}
 import info.acidflow.homer.modules.timers.{TimerModuleConfigFactory, TimersSnipsModule}
 import info.acidflow.homer.modules.weather.{WeatherOwmModuleConfigFactory, WeatherOwmSnipsModule}
 
@@ -16,8 +17,12 @@ object Main {
       WeatherOwmModuleConfigFactory.fromResource("modules/conf/weather_owm.local.properties")
     )
 
-    val modules = List(timerModule, weatherModule)
-    modules.foreach(m => m.start())
-    
+    val deezerModule = new DeezerSnipsModule(
+      DeezerSnipsModuleConfigFactory.fromResource("modules/conf/music_deezer.local.properties")
+    )
+
+    val modules = List(weatherModule, timerModule, deezerModule)
+
+    modules.foreach(m => m.startModule())
   }
 }

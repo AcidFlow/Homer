@@ -1,6 +1,5 @@
 // SBT
-import sbt._
-import Keys._
+import sbt.Keys._
 
 
 object BuildSettings {
@@ -10,7 +9,8 @@ object BuildSettings {
     organization := "info.acidflow",
     scalaVersion := "2.12.3",
     javacOptions := javaCompilerOptions,
-    resolvers ++= Dependencies.resolverRepos
+    resolvers ++= Dependencies.resolverRepos,
+    updateOptions := updateOptions.value.withCachedResolution(true)
   )
 
   lazy val javaCompilerOptions = Seq(

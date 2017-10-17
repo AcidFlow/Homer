@@ -14,7 +14,8 @@ object MqttConfigFactory {
     MqttClientConfig(
       props.getProperty("protocol"),
       props.getProperty("host"),
-      props.getProperty("port").toInt
+      props.getProperty("port").toInt,
+      props.getProperty("persistence")
     )
   }
 

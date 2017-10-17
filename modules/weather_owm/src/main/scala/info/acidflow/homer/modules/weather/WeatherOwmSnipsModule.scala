@@ -3,24 +3,25 @@ package info.acidflow.homer.modules.weather
 import com.typesafe.scalalogging.LazyLogging
 import info.acidflow.homer.Constants
 import info.acidflow.homer.model.{NluResult, SlotValueCustom}
-import info.acidflow.homer.modules.SnipsModule
 import info.acidflow.homer.modules.weather.network.OwmApi
+import info.acidflow.homer.modules.{SnipsModule, SnipsTTS}
 
 import scala.util.{Failure, Success}
 
 
 class WeatherOwmSnipsModule(
-  val config: WeatherOwmModuleConfig = WeatherOwmModuleConfigFactory.fromResource()) extends SnipsModule with
-  LazyLogging {
+  val config: WeatherOwmModuleConfig = WeatherOwmModuleConfigFactory.fromResource()) extends SnipsModule
+  with LazyLogging
+  with SnipsTTS {
 
   private lazy val api = new OwmApi(config.owmBaseUrl, config.owmApiKey, config.owmUnits)
 
-  override def getSubscriptions: Seq[String] = {
+  override def getIntentSubscriptions: Seq[String] = {
     Seq(config.intentSearchWeatherForecast)
       .map(n => Constants.Mqtt.INTENT_REGISTER_PREFIX + n)
   }
 
-  override def handleMessage(nluResult: NluResult): Unit = {
+  override def handleIntent(nluResult: NluResult): Unit = {
     if (config.intentSearchWeatherForecast.equals(nluResult.intent.intentName)) {
       searchForecast(nluResult)
     } else {
@@ -49,5 +50,6 @@ class WeatherOwmSnipsModule(
       }
     )
   }
+
 
 }

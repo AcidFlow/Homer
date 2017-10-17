@@ -15,6 +15,6 @@ trait OwmService {
   @GET("/data/2.5/weather")
   def getForecastForCityId(
     @Query("APPID") apiKey: String, @Query("units") units: String, @Query("id") cityId: String
-  ) : Call[OwmForecast]
+  ): Call[OwmForecast]
 
 }
