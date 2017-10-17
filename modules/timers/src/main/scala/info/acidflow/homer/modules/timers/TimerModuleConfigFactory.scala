@@ -1,20 +1,17 @@
 package info.acidflow.homer.modules.timers
 
-import java.util.Properties
-
-import scala.io.Source
+import com.typesafe.config.ConfigFactory
 
 
 object TimerModuleConfigFactory {
 
-  def fromResource(res: String = "conf/modules/timers.properties"): TimerModuleConfig = {
-    val props = new Properties()
-    props.load(Source.fromResource(res).reader)
+  def fromResource(res: String = "conf/modules/timers.conf"): TimerModuleConfig = {
+    val conf = ConfigFactory.load(res)
 
     TimerModuleConfig(
-      props.getProperty("intent.start_timer"),
-      props.getProperty("intent.stop_timer"),
-      props.getProperty("sound.alarm")
+      conf.getString("timers.intents.start_timer"),
+      conf.getString("timers.intents.stop_timer"),
+      conf.getString("timers.sound.alarm")
     )
   }
 

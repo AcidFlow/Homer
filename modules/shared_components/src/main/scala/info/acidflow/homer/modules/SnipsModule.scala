@@ -16,7 +16,7 @@ import org.eclipse.paho.client.mqttv3.{IMqttDeliveryToken, MqttCallback, MqttCli
 trait SnipsModule extends LazyLogging {
 
   private[this] val intentObjectMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
-  private[this] val intentMqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.properties")
+  private[this] val intentMqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.conf")
   private[this] val intentMqttClient = new MqttClient(
     intentMqttConfig.getUri.toString, generateClientId(),
     new MqttDefaultFilePersistence(intentMqttConfig.persistenceDir)

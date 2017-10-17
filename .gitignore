@@ -1,7 +1,7 @@
 target/
 *.iml
 .idea/
-*.local.properties
+*.local.conf
 paho*
 *.jar
 libdeezerplayer*.so

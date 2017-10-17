@@ -1,21 +1,17 @@
 package info.acidflow.homer.communication.mqtt
 
-import java.util.Properties
-
-import scala.io.Source
+import com.typesafe.config.ConfigFactory
 
 
 object MqttConfigFactory {
 
-  def fromResource(resPath: String = "global/conf/mqtt.properties"): MqttClientConfig = {
-    val props = new Properties()
-    props.load(Source.fromResource(resPath).reader())
-
+  def fromResource(resPath: String = "global/conf/mqtt.conf"): MqttClientConfig = {
+    val conf = ConfigFactory.load(resPath)
     MqttClientConfig(
-      props.getProperty("protocol"),
-      props.getProperty("host"),
-      props.getProperty("port").toInt,
-      props.getProperty("persistence")
+      conf.getString("mqtt.protocol"),
+      conf.getString("mqtt.host"),
+      conf.getInt("mqtt.port"),
+      conf.getString("mqtt.persistence")
     )
   }
 
