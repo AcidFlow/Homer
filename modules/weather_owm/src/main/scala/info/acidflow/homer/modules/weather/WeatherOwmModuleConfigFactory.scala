@@ -1,22 +1,18 @@
 package info.acidflow.homer.modules.weather
 
-import java.util.Properties
-
-import scala.io.Source
+import com.typesafe.config.ConfigFactory
 
 
 object WeatherOwmModuleConfigFactory {
 
-  def fromResource(res: String = "modules/conf/weather_owm.properties"): WeatherOwmModuleConfig = {
-    val props = new Properties()
-    props.load(Source.fromResource(res).reader)
+  def fromResource(res: String = "modules/conf/weather_owm.conf"): WeatherOwmModuleConfig = {
+    val conf = ConfigFactory.load(res)
 
     WeatherOwmModuleConfig(
-      props.getProperty("intent.search_weather_forecast"),
-      props.getProperty("owm.base_url"),
-      props.getProperty("owm.api_key"),
-      props.getProperty("owm.units"),
-      props.getProperty("owm.default.location")
+      conf.getString("weather.owm.api.base_url"),
+      conf.getString("weather.owm.api.key"),
+      conf.getString("weather.owm.defaults.units"),
+      conf.getString("weather.owm.defaults.location")
     )
   }
 

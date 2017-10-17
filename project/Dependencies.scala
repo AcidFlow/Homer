@@ -17,6 +17,7 @@ object Dependencies {
     val scalaLogging = "3.7.2"
     val logBack = "1.2.3"
     val retrofit = "2.3.0"
+    val configFactory = "1.3.1"
 
     // Tests
     val scalaTest = "3.0.1"
@@ -34,6 +35,7 @@ object Dependencies {
     val logBack = "ch.qos.logback" % "logback-classic" % LibVersion.logBack
     val retrofit = "com.squareup.retrofit2" % "retrofit" % LibVersion.retrofit
     val retrofitJackson = "com.squareup.retrofit2" % "converter-jackson" % LibVersion.retrofit
+    val configFactory = "com.typesafe" % "config" % LibVersion.configFactory
 
 
     // Test

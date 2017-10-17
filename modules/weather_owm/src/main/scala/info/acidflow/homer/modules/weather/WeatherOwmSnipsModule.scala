@@ -17,12 +17,12 @@ class WeatherOwmSnipsModule(
   private lazy val api = new OwmApi(config.owmBaseUrl, config.owmApiKey, config.owmUnits)
 
   override def getIntentSubscriptions: Seq[String] = {
-    Seq(config.intentSearchWeatherForecast)
+    Seq("SearchWeatherForecast")
       .map(n => Constants.Mqtt.INTENT_REGISTER_PREFIX + n)
   }
 
   override def handleIntent(nluResult: NluResult): Unit = {
-    if (config.intentSearchWeatherForecast.equals(nluResult.intent.intentName)) {
+    if ("SearchWeatherForecast".equals(nluResult.intent.intentName)) {
       searchForecast(nluResult)
     } else {
       throw new IllegalArgumentException("Unknown weather forecast intent")
@@ -35,20 +35,16 @@ class WeatherOwmSnipsModule(
       .map(s => api.getLocalityForecast(s.value.asInstanceOf[SlotValueCustom].value))
       .getOrElse(api.getForecastForId(config.owmDefaultCityId))
 
-    future.onComplete(
-      t => {
-        t match {
-          case Success(v) => {
-            say(s"The weather forecast for ${v.name}, ${v.weather.head.description}, ${v.main.temp} degrees")
-            logger.info(v.toString)
-          }
-
-          case Failure(e) => {
-            logger.error("Error while getting forecast", e)
-          }
-        }
+    future.onComplete {
+      case Success(v) => {
+        say(s"The weather forecast for ${v.name}, ${v.weather.head.description}, ${v.main.temp} degrees")
+        logger.info(v.toString)
       }
-    )
+
+      case Failure(e) => {
+        logger.error("Error while getting forecast", e)
+      }
+    }
   }
 
 

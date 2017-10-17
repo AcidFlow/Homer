@@ -23,6 +23,7 @@ lazy val shared_components = (project in file("modules/shared_components"))
       Dependencies.Libraries.mqtt,
       Dependencies.Libraries.scalaLogging,
       Dependencies.Libraries.logBack,
+      Dependencies.Libraries.configFactory,
 
       Dependencies.Libraries.scalaTest
     )
@@ -35,7 +36,8 @@ lazy val weather_owm = (project in file("modules/weather_owm"))
     description := "Weather module using Open weather map.",
     libraryDependencies ++= Seq(
       Dependencies.Libraries.retrofit,
-      Dependencies.Libraries.retrofitJackson
+      Dependencies.Libraries.retrofitJackson,
+      Dependencies.Libraries.configFactory
     )
   )
   .settings(assemblyJarName in assembly := "weather_owm.jar")
@@ -46,7 +48,10 @@ lazy val timers = (project in file("modules/timers"))
   .settings(
     BuildSettings.buildSettings,
     name := "timers",
-    description := "Timers module."
+    description := "Timers module.",
+    libraryDependencies ++= Seq(
+      Dependencies.Libraries.configFactory
+    )
   )
   .settings(assemblyJarName in assembly := "timers.jar")
   .aggregate(shared_components)

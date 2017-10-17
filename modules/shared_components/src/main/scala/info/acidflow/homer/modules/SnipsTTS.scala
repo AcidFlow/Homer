@@ -14,7 +14,7 @@ import org.eclipse.paho.client.mqttv3.{MqttClient, MqttMessage}
 trait SnipsTTS extends LazyLogging {
 
   private[this] val ttsObjectMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
-  private[this] val ttsMqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.properties")
+  private[this] val ttsMqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.conf")
   private[this] val ttsMqttClient = new MqttClient(
     ttsMqttConfig.getUri.toString, generateClientId(), new MqttDefaultFilePersistence(ttsMqttConfig.persistenceDir)
   )

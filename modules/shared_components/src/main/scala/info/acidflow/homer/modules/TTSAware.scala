@@ -9,7 +9,7 @@ import org.eclipse.paho.client.mqttv3.{IMqttDeliveryToken, MqttCallback, MqttCli
 
 trait TTSAware extends LazyLogging {
 
-  private[this] val ttsAwareMqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.properties")
+  private[this] val ttsAwareMqttConfig = MqttConfigFactory.fromResource("global/conf/mqtt.local.conf")
   private[this] val ttsAwareMqttClient = new MqttClient(
     ttsAwareMqttConfig.getUri.toString, generateClientId(),
     new MqttDefaultFilePersistence(ttsAwareMqttConfig.persistenceDir)
