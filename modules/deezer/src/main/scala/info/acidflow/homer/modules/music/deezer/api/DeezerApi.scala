@@ -10,29 +10,27 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class DeezerApi(private[this] var baseUrl: String, private[this] val accessToken: String) extends LazyLogging {
+class DeezerApi(private var baseUrl: String, private val accessToken: String) extends LazyLogging {
 
-  private[this] val service = new Retrofit.Builder()
+  private val service = new Retrofit.Builder()
     .baseUrl(baseUrl)
     .addConverterFactory(JacksonConverterFactory.create(new ObjectMapper().registerModule(DefaultScalaModule)))
     .build()
     .create(classOf[DeezerApiService])
 
   def getMyUser()(implicit ec: ExecutionContext): Future[Artist] = {
-    synchronized {
-      Future {
-        service.getMyUser(accessToken).execute().body()
-      }
+    Future {
+      service.getMyUser(accessToken).execute().body()
     }
+
   }
 
   def getRadios()(implicit ec: ExecutionContext): Future[List[Radio]] = {
-    synchronized {
-      Future {
-        service.getRadios(accessToken, 1000).execute().body().data
-      }
+    Future {
+      service.getRadios(accessToken, 1000).execute().body().data
     }
   }
+
 
   def searchArtist(artistName: String)(implicit ec: ExecutionContext): Future[Artist] = {
     Future {
