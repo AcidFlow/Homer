@@ -1,33 +1,39 @@
 package info.acidflow.homer.modules.timers
 
 
-import java.util.concurrent.{Executors, Future, ScheduledThreadPoolExecutor, TimeUnit}
+import java.util.concurrent.{Future, ScheduledThreadPoolExecutor, TimeUnit}
 
 import com.typesafe.scalalogging.LazyLogging
-import info.acidflow.homer.Constants
 import info.acidflow.homer.model.{NluResult, SlotValueCustom, SlotValueDuration}
 import info.acidflow.homer.modules.timers.async.{TimerFinishedListener, TimerRunnable}
-import info.acidflow.homer.modules.{SnipsModule, SnipsTTS}
+import info.acidflow.homer.modules.{SnipsClient, SnipsClientModule}
 import info.acidflow.homer.sound.SoundPlayer
 
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 
 
 class TimersSnipsModule(
-  private[this] val conf: TimerModuleConfig = TimerModuleConfigFactory.fromResource(),
-  private[this] val soundPlayer: SoundPlayer = new SoundPlayer,
-  private[this] val executor: ScheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(4),
-  private[this] var timerMap: Map[String, Future[_]] = Map[String, Future[_]]())
-  extends SnipsModule
-    with SnipsTTS
+  private val snipsClient: SnipsClient,
+  private val conf: TimerModuleConfig = TimerModuleConfigFactory.fromResource(),
+  private val soundPlayer: SoundPlayer = new SoundPlayer,
+  private val executor: ScheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(4),
+  private val timerMap: mutable.Map[String, Future[_]] = mutable.Map[String, Future[_]]())
+  extends SnipsClientModule
     with TimerFinishedListener
     with LazyLogging {
 
-  override def getIntentSubscriptions: Seq[String] = {
-    Seq(conf.intentStartTimer, conf.intentStopTimer)
-      .map(s => Constants.Mqtt.INTENT_REGISTER_PREFIX + s)
+
+  override def start(): Unit = {
+    Seq(conf.intentStartTimer, conf.intentStopTimer).foreach(i => snipsClient.registerForIntent(i, this))
+    executor.setRemoveOnCancelPolicy(true)
+  }
+
+
+  override def stop(): Unit = {
+    executor.shutdownNow()
   }
 
   override def handleIntent(nluResult: NluResult): Unit = {
@@ -60,28 +66,24 @@ class TimersSnipsModule(
 
   private def stopTimer(nluResult: NluResult): Unit = {
     val slotTimerName = nluResult.extractSlotMap()("timerName").value.asInstanceOf[SlotValueCustom].value
-    timerMap.get(slotTimerName)
-      .map(f => f.cancel(true))
-      .foreach(b => if (b) say(s"Timer $slotTimerName canceled"))
-
-    timerMap -= slotTimerName
-    logger.debug("Stopped timer: {}", slotTimerName)
+    timerMap.remove(slotTimerName) match {
+      case Some(f) => if (f.cancel(false)) logger.debug("Timer {} stopped", slotTimerName)
+      case None => logger.debug("No timer with key {}", slotTimerName)
+    }
   }
 
   override def onTimerFinished(timerName: String): Unit = {
     timerMap -= timerName
     logger.debug("Time is up for : {}", timerName)
 
-    implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(1))
+    implicit val ec: ExecutionContext = ExecutionContext.global
     soundPlayer.playSoundResource(conf.soundAlarm).onComplete {
-      case Success(_) => {
-        say(s"Timer for $timerName is over!")
-      }
-      case Failure(e) => {
+      case Success(_) =>
+        snipsClient.say(s"Timer for $timerName is over!")
 
+      case Failure(e) =>
         logger.error("Error when playing audio file", e)
-        say(s"Timer for $timerName is over!")
-      }
+        snipsClient.say(s"Timer for $timerName is over!")
     }
   }
 }

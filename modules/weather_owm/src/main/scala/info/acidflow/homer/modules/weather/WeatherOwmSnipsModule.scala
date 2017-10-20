@@ -1,49 +1,43 @@
 package info.acidflow.homer.modules.weather
 
 import com.typesafe.scalalogging.LazyLogging
-import info.acidflow.homer.Constants
 import info.acidflow.homer.model.{NluResult, SlotValueCustom}
 import info.acidflow.homer.modules.weather.network.OwmApi
-import info.acidflow.homer.modules.{SnipsModule, SnipsTTS}
+import info.acidflow.homer.modules.{SnipsClient, SnipsClientModule}
 
 import scala.util.{Failure, Success}
 
 
-class WeatherOwmSnipsModule(
-  val config: WeatherOwmModuleConfig = WeatherOwmModuleConfigFactory.fromResource()) extends SnipsModule
-  with LazyLogging
-  with SnipsTTS {
+class WeatherOwmSnipsModule(val snipsClient: SnipsClient, config: WeatherOwmModuleConfig)
+  extends SnipsClientModule
+    with LazyLogging {
 
-  private lazy val api = new OwmApi(config.owmBaseUrl, config.owmApiKey, config.owmUnits)
+  private val owmApi = new OwmApi(config.owmBaseUrl, config.owmApiKey, config.owmUnits)
 
-  override def getIntentSubscriptions: Seq[String] = {
-    Seq("SearchWeatherForecast")
-      .map(n => Constants.Mqtt.INTENT_REGISTER_PREFIX + n)
+  override def start(): Unit = {
+    snipsClient.registerForIntent("SearchWeatherForecast", this)
   }
 
   override def handleIntent(nluResult: NluResult): Unit = {
-    if ("SearchWeatherForecast".equals(nluResult.intent.intentName)) {
-      searchForecast(nluResult)
-    } else {
-      throw new IllegalArgumentException("Unknown weather forecast intent")
+    nluResult.intent.intentName match {
+      case "SearchWeatherForecast" => searchForecast(nluResult)
+      case _ => throw new IllegalArgumentException("Unknown weather forecast intent")
     }
   }
 
   private def searchForecast(nluResult: NluResult): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
     val future = nluResult.extractSlotMap().get("weatherForecastLocality")
-      .map(s => api.getLocalityForecast(s.value.asInstanceOf[SlotValueCustom].value))
-      .getOrElse(api.getForecastForId(config.owmDefaultCityId))
+      .map(s => owmApi.getLocalityForecast(s.value.asInstanceOf[SlotValueCustom].value))
+      .getOrElse(owmApi.getForecastForId(config.owmDefaultCityId))
 
     future.onComplete {
-      case Success(v) => {
-        say(s"The weather forecast for ${v.name}, ${v.weather.head.description}, ${v.main.temp} degrees")
+      case Success(v) =>
         logger.info(v.toString)
-      }
+        snipsClient.say(s"The weather forecast for ${v.name}, ${v.weather.head.description}, ${v.main.temp} degrees")
 
-      case Failure(e) => {
+      case Failure(e) =>
         logger.error("Error while getting forecast", e)
-      }
     }
   }
 

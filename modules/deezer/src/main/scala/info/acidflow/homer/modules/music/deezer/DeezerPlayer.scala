@@ -9,7 +9,6 @@ import scala.collection.mutable
 
 object DeezerPlayer extends LazyLogging {
 
-
   private val deezerFlowPrefix = "dzradio:///user-"
   private val deezerRadioPrefix = "dzradio:///radio-"
   private val trackList = mutable.ListBuffer.empty[Track]
@@ -98,6 +97,12 @@ object DeezerPlayer extends LazyLogging {
     DeezerPlayerNative.stop()
   }
 
+  def release(): Unit = {
+    if (!_isReady) return
+
+    DeezerPlayerNative.release()
+  }
+
   def ready(): Unit = {
     logger.info("Deezer player is ready!")
     _isReady = true
@@ -111,4 +116,6 @@ object DeezerPlayer extends LazyLogging {
     type MediaTypePlaying = Value
     val NONE, RADIO, FLOW, TRACKLIST = Value
   }
+
+
 }
